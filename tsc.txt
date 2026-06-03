@@ -1,0 +1,12 @@
+﻿app/auth/login/page.tsx(27,11): error TS2339: Property 'isLoaded' does not exist on type 'SignInSignalValue'.
+app/auth/login/page.tsx(27,29): error TS2339: Property 'setActive' does not exist on type 'SignInSignalValue'.
+app/auth/login/page.tsx(43,63): error TS2353: Object literal may only specify known properties, and 'password' does not exist in type 'SignInFutureCreateParams'.
+app/auth/login/page.tsx(44,18): error TS2339: Property 'status' does not exist on type '{ error: ClerkError | null; }'.
+app/auth/login/page.tsx(45,43): error TS2339: Property 'createdSessionId' does not exist on type '{ error: ClerkError | null; }'.
+app/auth/login/page.tsx(61,20): error TS2339: Property 'authenticateWithRedirect' does not exist on type 'SignInFutureResource'.
+app/auth/register/page.tsx(29,11): error TS2339: Property 'isLoaded' does not exist on type 'SignUpSignalValue'.
+app/auth/register/page.tsx(29,29): error TS2339: Property 'setActive' does not exist on type 'SignUpSignalValue'.
+app/auth/register/page.tsx(53,9): error TS2353: Object literal may only specify known properties, and 'password' does not exist in type 'SignUpFutureCreateParams'.
+app/auth/register/page.tsx(55,20): error TS2339: Property 'prepareEmailAddressVerification' does not exist on type 'SignUpFutureResource'.
+app/auth/register/page.tsx(70,35): error TS2339: Property 'attemptEmailAddressVerification' does not exist on type 'SignUpFutureResource'.
+app/auth/register/page.tsx(87,20): error TS2339: Property 'authenticateWithRedirect' does not exist on type 'SignUpFutureResource'.

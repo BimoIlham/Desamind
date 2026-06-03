@@ -1,0 +1,221 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+@import "tailwindcss";
+
+/**
+ * DesaMind — Design System v2
+ * Modern, clean, professional color palette
+ */
+@theme {
+  /* Primary: Slate Dark Green */
+  --color-primary-50:  #EDFAF9;
+  --color-primary-100: #D0F2F1;
+  --color-primary-200: #A6E4E1;
+  --color-primary-300: #78D1CD;
+  --color-primary-400: #52BDB8;
+  --color-primary-500: #38A39D;
+  --color-primary-600: #2B827D;
+  --color-primary-700: #216661;
+  --color-primary-800: #194F4B;
+  --color-primary-900: #133D3A;
+  --color-primary-950: #0D1C1B;
+
+  /* Accent: Forest Green */
+  --color-accent-50:  #F0FBF4;
+  --color-accent-100: #DCF5E5;
+  --color-accent-200: #B6E6C5;
+  --color-accent-300: #8BD5A2;
+  --color-accent-400: #62C481;
+  --color-accent-500: #48B168;
+  --color-accent-600: #398E53;
+  --color-accent-700: #2B6B3E;
+  --color-accent-800: #1F522F;
+  --color-accent-900: #163A21;
+  --color-accent-950: #081F0F;
+
+  /* Neutral */
+  --color-bg:      #F9F8F4;
+  --color-surface: #FFFFFF;
+  --color-border:  #E4EBF0;
+  --color-muted:   #8A9BB0;
+
+  /* Semantic */
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-danger:  #DC2626;
+  --color-info:    #2563EB;
+
+  /* Typography */
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  /* Animations */
+  --animate-fade-in:   fadeIn 0.5s ease-in-out;
+  --animate-slide-up:  slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-scale-in:  scaleIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ===================================================
+   KEYFRAMES
+=================================================== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+/* ===================================================
+   DESIGN TOKENS (CSS Variables)
+=================================================== */
+:root {
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+  --radius-2xl: 32px;
+
+  --shadow-xs:  0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm:  0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.09);
+  --shadow-lg:  0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-xl:  0 20px 60px rgba(0, 0, 0, 0.15);
+  --shadow-green: 0 8px 32px rgba(11, 61, 40, 0.25);
+
+  --transition-fast:   all 0.15s ease;
+  --transition-base:   all 0.2s ease;
+  --transition-smooth: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ===================================================
+   BASE RESET & GLOBAL STYLES
+=================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background-color: #F9F8F4;
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+/* ===================================================
+   CUSTOM SCROLLBAR
+=================================================== */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #F1F5F9; }
+::-webkit-scrollbar-thumb { background: #1FA66C; border-radius: 100px; }
+::-webkit-scrollbar-thumb:hover { background: #136A44; }
+
+/* ===================================================
+   UTILITY CLASSES
+=================================================== */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar { display: none; }
+
+/* Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Gradient text - removed flashy gold */
+.gradient-text {
+  background: linear-gradient(135deg, #133D3A 0%, #38A39D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card elevation system */
+.card {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  border: 1px solid #E4EBF0;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-smooth);
+}
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Badge base */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Shimmer loading */
+.shimmer {
+  background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Float animation */
+.float { animation: float 3s ease-in-out infinite; }
+
+/* Section label */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(19, 61, 58, 0.1);
+  color: #133D3A;
+  border: 1px solid rgba(19, 61, 58, 0.15);
+}
+
+/* Focus rings */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(31, 166, 108, 0.15);
+}
+
+/* Leaflet z-index fix (do not remove) */
+.leaflet-container { z-index: 0; }
+
+/* Dropdown animation */
+.dropdown-enter {
+  animation: scaleIn 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: top center;
+}

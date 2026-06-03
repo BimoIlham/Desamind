@@ -1,0 +1,86 @@
+============================================================
+LAPORAN PROYEK
+DesaMind — Platform Desa Cerdas Berbasis AI
+============================================================
+
+NAMA PROYEK
+DesaMind — Platform Desa Cerdas Berbasis AI
+
+NAMA KELOMPOK
+(isi sendiri — contoh: Kelompok 5 / Tim DesaMind)
+
+TUJUAN PROYEK
+Membangun platform digital terpadu berbasis AI untuk meningkatkan
+partisipasi warga, transparansi tata kelola desa, dan pemberdayaan
+ekonomi lokal. Platform menyatukan layanan pelaporan masalah,
+pemasaran UMKM, informasi lowongan kerja, edukasi, dan asisten AI
+dalam satu ekosistem yang mudah diakses warga desa.
+
+DESKRIPSI SINGKAT PROYEK
+DesaMind adalah aplikasi web (Next.js 16, React 19, TypeScript,
+Tailwind CSS) yang menghadirkan layanan desa cerdas. Warga dapat
+melaporkan masalah/infrastruktur yang otomatis diklasifikasi oleh AI,
+berbelanja produk UMKM lokal melalui marketplace dengan keranjang dan
+checkout, melihat lowongan kerja, membaca konten edukasi, serta
+berinteraksi dengan asisten AI (Google Gemini). Tersedia peta
+interaktif desa (Leaflet), transparansi APBDes, forum komunitas,
+gotong royong, galeri, pengumuman, skor kesehatan desa berbasis AI,
+prediksi, dan tombol darurat SOS. Sistem dilengkapi dasbor admin untuk
+mengelola seluruh konten, autentikasi via Clerk, basis data Supabase,
+dan dukungan multibahasa (next-intl).
+
+OUTPUT / LUARAN PROYEK
+- Aplikasi web responsif siap pakai (frontend + backend API routes Next.js)
+- Modul pelaporan warga dengan klasifikasi otomatis AI
+- Marketplace UMKM (katalog produk, keranjang, checkout, manajemen pesanan)
+- Modul lowongan kerja, edukasi/artikel, pengumuman, galeri
+- Asisten AI percakapan + fitur AI: rekomendasi, prediksi, skor desa,
+  generasi produk
+- Peta interaktif desa & pengaturan batas wilayah
+- Modul transparansi APBDes dengan visualisasi data (Recharts)
+- Dasbor admin lengkap untuk pengelolaan konten
+- Fitur darurat SOS dan dukungan dwibahasa
+
+MITRA STUDI KASUS
+(isi sendiri — contoh: Pemerintah Desa [Nama Desa], Kecamatan [...],
+Kabupaten [...])
+
+LINK TIME LINE PROYEK
+(isi sendiri — lampirkan tautan Gantt chart / Google Sheets / Notion)
+
+PROGRES PENGERJAAN PROYEK
++/- 90% selesai. Seluruh modul inti (laporan, UMKM, lowongan, edukasi,
+peta, transparansi, komunitas, asisten AI, dasbor admin) sudah
+terbangun dan terintegrasi dengan Supabase, Clerk, dan Google Gemini.
+Tahap saat ini berada pada finalisasi konten, pengujian, dan
+penyempurnaan UI/UX.
+
+KENDALA
+- Integrasi dan kuota/biaya layanan AI (Google Gemini) untuk
+  klasifikasi dan asisten
+- Akurasi klasifikasi laporan otomatis masih perlu penyetelan
+- Penyediaan data riil desa (UMKM, batas wilayah peta, APBDes) sebagai
+  isi awal
+- Penyesuaian dengan Next.js 16 (versi terbaru dengan perubahan konvensi)
+
+TINDAK LANJUT
+- Pengujian menyeluruh (fungsional & uji coba bersama mitra desa)
+- Pengisian data nyata dan pelatihan admin desa
+- Optimasi prompt/akurasi AI dan pemantauan biaya
+- Deployment ke produksi (mis. Vercel) serta dokumentasi pengguna
+
+DESKRIPSI SINGKAT HASIL LUARAN
+Platform desa cerdas yang fungsional dan terintegrasi: warga dapat
+melapor, berbelanja produk UMKM, mencari lowongan, mengakses edukasi,
+dan dibantu asisten AI; perangkat desa memperoleh transparansi anggaran
+serta dasbor admin terpusat untuk mengelola seluruh layanan.
+
+LINK BUKTI LUARAN
+(isi sendiri — lampirkan tautan demo aplikasi/Vercel, repositori GitHub,
+atau video demo)
+
+============================================================
+Stack Teknologi: Next.js 16, React 19, TypeScript, Tailwind CSS 4,
+Supabase, Clerk Auth, Google Gemini AI, Leaflet/React-Leaflet,
+Recharts, next-intl, ImageKit, Framer Motion.
+============================================================
