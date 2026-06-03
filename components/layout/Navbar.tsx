@@ -1,7 +1,7 @@
 'use client';
 /**
  * components/layout/Navbar.tsx
- * Modern sticky navbar — custom auth (no Clerk).
+ * Modern sticky navbar with static demo auth.
  */
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -14,7 +14,6 @@ import {
   Store, LogOut, User, ChevronRight, Megaphone, Camera, PieChart, Settings
 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { setLocaleCookie } from '@/app/actions/locale';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useCart } from '@/components/marketplace/CartContext';
@@ -88,9 +87,12 @@ const NAV_ITEMS: NavItem[] = [
 function LanguageSwitcher() {
   const locale = useLocale();
   const router = useRouter();
-  const handleSwitch = async (newLocale: string) => {
+  const handleSwitch = (newLocale: string) => {
     if (newLocale === locale) return;
-    await setLocaleCookie(newLocale);
+    if (typeof document !== 'undefined') {
+      document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`;
+      localStorage.setItem('NEXT_LOCALE', newLocale);
+    }
     router.refresh();
   };
   return (
@@ -101,7 +103,7 @@ function LanguageSwitcher() {
   );
 }
 
-// ── Custom Profile Button (replaces Clerk UserButton) ─────────
+// ── Custom Profile Button ─────────
 function ProfileButton() {
   const { user, isAdmin, logout } = useAuth();
   const router = useRouter();

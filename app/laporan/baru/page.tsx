@@ -99,7 +99,7 @@ export default function NewReportPage() {
     try {
       let image_url: string | null = null;
 
-      // Upload image via the unified /api/upload endpoint (Supabase Storage)
+      // Upload image via the static demo upload endpoint.
       if (imageFile) {
         const body = new FormData();
         body.append('file', imageFile);

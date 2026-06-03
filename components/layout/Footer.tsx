@@ -141,20 +141,6 @@ export default function Footer() {
           
         </div>
 
-        {/* Kerjasama / Partnership Bar */}
-        <div className="pt-8 mt-2 border-t border-white/5">
-          <div className="bg-white/[0.03] border border-white/10 rounded-xl px-6 py-5 flex flex-col sm:flex-row items-center justify-center gap-x-3 gap-y-1 text-center">
-            <p className="text-[12px] text-gray-400 font-light">
-              Program ini dibuat atas kerjasama
-            </p>
-            <p className="text-[12px] font-semibold text-white tracking-wide">
-              Universitas Teknokrat Indonesia (UTI)
-              <span className="text-primary-500 font-normal mx-1.5">&amp;</span>
-              Mitra
-            </p>
-          </div>
-        </div>
-
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between text-[11px] text-gray-500 tracking-wide font-light gap-4">
           <p>© 2026 DesaMind Indonesia. All rights reserved.</p>

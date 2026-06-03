@@ -11,7 +11,7 @@ coverage
 .vscode
 .idea
 
-# Env (rahasia diberikan saat runtime, bukan dibundel ke image)
+# Env lokal tidak dibundel ke image static
 .env*
 
 # Docker

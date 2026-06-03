@@ -136,7 +136,7 @@ export default function CheckoutPage() {
        const data = await response.json();
        if (!response.ok) throw new Error(data.error || 'Gagal membuat pesanan');
 
-       if (form.paymentMethod === 'cod' || data.token === 'MIDTRANS_NOT_CONFIGURED') {
+       if (form.paymentMethod === 'cod' || data.token === 'STATIC_CHECKOUT') {
           clear();
           window.location.href = `/umkm/pesanan?id=${data.order_id}&status=success`;
           return;
@@ -242,7 +242,7 @@ export default function CheckoutPage() {
               {/* Courier Option */}
               <div className="bg-white p-6 md:p-8 border border-gray-200 shadow-sm">
                  <h2 className="text-sm font-bold text-primary-900 border-b border-gray-100 pb-4 mb-6 flex items-center gap-2 uppercase tracking-widest">
-                   <div className="p-1.5 bg-indigo-50 text-indigo-700 border border-indigo-100"><Truck className="w-4 h-4" /></div> KURIR & ONGKIR (BINDERBYTE)
+                   <div className="p-1.5 bg-indigo-50 text-indigo-700 border border-indigo-100"><Truck className="w-4 h-4" /></div> KURIR & ONGKIR
                  </h2>
                  <div className="flex flex-col sm:flex-row gap-4">
                     <select className="flex-1 border border-gray-300 p-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white font-medium" value={form.courier} onChange={e => { setForm({...form, courier: e.target.value}); setShippingCost(0); }}>
@@ -272,7 +272,7 @@ export default function CheckoutPage() {
                        <input type="radio" name="payment" value="midtrans" checked={form.paymentMethod === 'midtrans'} onChange={() => setForm({...form, paymentMethod: 'midtrans'})} className="text-primary-600 focus:ring-primary-500 w-4 h-4" />
                        <div className="flex-1">
                           <p className="text-sm font-bold text-gray-900">Digital Payment (Otomatis)</p>
-                          <p className="text-[10px] uppercase font-bold tracking-widest text-gray-500">Qris, Bank Transfer, E-Wallet (Midtrans)</p>
+                          <p className="text-[10px] uppercase font-bold tracking-widest text-gray-500">QRIS, Bank Transfer, E-Wallet</p>
                        </div>
                     </label>
                     <label className={`border p-4 flex items-center gap-3 cursor-pointer transition-colors ${form.paymentMethod === 'cod' ? 'border-primary-600 bg-primary-50' : 'border-gray-200'}`}>
@@ -375,7 +375,7 @@ export default function CheckoutPage() {
 
                  <div className="flex items-center justify-center gap-2 mt-4 text-[9px] uppercase tracking-widest font-bold text-gray-400 bg-gray-50 py-2 border border-gray-100">
                     <ShieldCheck className="w-3 h-3 text-green-600" />
-                    TRANSAKSI AMAN OLEH MIDTRANS
+                    TRANSAKSI DEMO AMAN
                  </div>
               </div>
            </div>

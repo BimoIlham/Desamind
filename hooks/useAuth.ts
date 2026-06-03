@@ -1,7 +1,7 @@
 'use client';
 /**
  * hooks/useAuth.ts
- * React hook that tracks auth state from the server session (/api/auth/me).
+ * React hook that tracks auth state from local static demo storage.
  */
 import { useState, useEffect, useCallback } from 'react';
 import {
@@ -49,7 +49,7 @@ export function useAuth() {
       const result = await authRegister(name, email, password);
       // Only set the user when the account is active (not pending approval).
       if (result.ok && result.user && !result.pending) {
-        // re-resolve from cookie to confirm session was set
+        // Re-resolve from local storage to confirm the demo session was set.
         const u = await fetchCurrentUser();
         if (u) {
           setUser(u);

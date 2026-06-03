@@ -100,7 +100,7 @@ function ProductForm() {
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
         <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6">
-          {/* IMAGE UPLOAD (Supabase Storage) */}
+          {/* IMAGE UPLOAD */}
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Gambar Produk *</label>
             <ImageUpload

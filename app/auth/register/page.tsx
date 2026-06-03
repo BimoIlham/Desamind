@@ -1,10 +1,23 @@
 'use client';
-import { useState } from 'react';
+
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
-import { Eye, EyeOff, Loader2, CheckCircle, ArrowRight } from 'lucide-react';
+import {
+  ArrowRight,
+  CheckCircle2,
+  Eye,
+  EyeOff,
+  Handshake,
+  LockKeyhole,
+  Loader2,
+  Mail,
+  ShieldCheck,
+  Sparkles,
+  UserRound,
+} from 'lucide-react';
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -18,6 +31,15 @@ export default function RegisterPage() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
 
+  const passwordScore = useMemo(() => {
+    let score = 0;
+    if (password.length >= 8) score += 40;
+    if (/[A-Z]/.test(password)) score += 20;
+    if (/[0-9]/.test(password)) score += 20;
+    if (/[^A-Za-z0-9]/.test(password)) score += 20;
+    return Math.min(score, 100);
+  }, [password]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -25,6 +47,7 @@ export default function RegisterPage() {
       setError('Password minimal 8 karakter.');
       return;
     }
+
     setLoading(true);
     const result = await register(name, email, password);
     if (!result.ok) {
@@ -32,145 +55,224 @@ export default function RegisterPage() {
       setLoading(false);
       return;
     }
+
     if (result.pending) {
-      // Account created but needs admin approval before login.
       setPending(true);
       setLoading(false);
       return;
     }
+
     setSuccess(true);
     setTimeout(() => router.push('/'), 1200);
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row-reverse bg-white">
-      {/* ── Left Side (visually right): Brand Panel ── */}
-      <div className="hidden md:flex flex-col justify-between w-1/2 bg-primary-950 p-12 relative overflow-hidden">
-        {/* Decorative background */}
-        <div className="absolute top-32 -right-32 w-96 h-96 bg-primary-800 rounded-full opacity-20 blur-3xl"></div>
-        <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-primary-700 rounded-full opacity-10 blur-3xl"></div>
-
-        <div className="relative z-10 flex justify-end">
-          <Link href="/">
-            <Image src="/logo-putih.webp" alt="DesaMind" width={160} height={44} className="h-10 w-auto object-contain" />
-          </Link>
-        </div>
-
-        <div className="relative z-10 mb-12 text-right flex flex-col items-end">
-          <h1 className="text-4xl text-white font-semibold leading-tight mb-6">
-            Mulai Perjalanan <br />
-            <span className="text-primary-300">Desa Digital Anda</span> <br />
-            Hari Ini.
-          </h1>
-          <p className="text-primary-200/80 text-sm max-w-sm leading-relaxed">
-            Jadilah bagian dari revolusi pelayanan masyarakat yang serba cepat, transparan, dan mudah dijangkau dari mana pun.
-          </p>
-        </div>
-
-        <div className="relative z-10 flex items-center justify-end gap-4 text-primary-400 text-xs font-medium tracking-widest uppercase">
-          <span>Mode Simulasi</span>
-          <div className="w-4 h-px bg-primary-800"></div>
-          <span>© 2026 DesaMind</span>
-        </div>
-      </div>
-
-      {/* ── Right Side (visually left): Form Panel ── */}
-      <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 md:px-16 lg:px-24 py-12 bg-white relative">
-        {/* Mobile Header (Hidden on Desktop) */}
-        <div className="md:hidden flex flex-col mb-8 lg:mb-10">
-          <Link href="/">
-            <Image src="/logo.png" alt="DesaMind" width={140} height={40} className="h-9 w-auto object-contain mb-6" />
-          </Link>
-          <h2 className="text-2xl font-bold text-gray-900">Bergabung Bersama Kami</h2>
-          <p className="text-sm text-gray-500 mt-1">Buat akun untuk melapor, belanja, dan memantau desa.</p>
-        </div>
-
-        <div className="w-full max-w-sm mx-auto">
-          <div className="hidden md:block mb-10">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Daftar Akun Baru</h2>
-            <p className="text-sm text-gray-500 tracking-wide">Lengkapi data di bawah untuk bergabung.</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {success && (
-              <div className="flex items-center gap-2 p-4 bg-green-50 text-green-700 text-sm font-medium rounded-xl border border-green-100 mb-4">
-                <CheckCircle className="w-5 h-5 shrink-0" />
-                Daftar berhasil! Mengalihkan...
-              </div>
-            )}
-            {pending && (
-              <div className="flex items-start gap-2 p-4 bg-amber-50 text-amber-700 text-sm font-medium rounded-xl border border-amber-200 mb-4">
-                <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                <span>Pendaftaran berhasil! Akun Anda menunggu persetujuan admin desa sebelum dapat masuk.</span>
-              </div>
-            )}
-            {error && (
-              <div className="p-4 bg-red-50 text-red-600 text-sm font-medium rounded-xl border border-red-100 mb-4">{error}</div>
-            )}
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Nama Lengkap</label>
-              <input
-                type="text"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder="Misal: Budi Santoso"
-                required
-                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all placeholder:text-gray-400"
-              />
+    <main className="min-h-screen bg-[#f5f7f2] text-gray-950">
+      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[0.95fr_1.05fr]">
+        <section className="flex min-h-screen w-full items-center justify-center overflow-x-hidden px-4 py-8 sm:px-6 lg:px-12">
+          <div className="min-w-0" style={{ width: 'min(calc(100vw - 2rem), 500px)' }}>
+            <div className="mb-8 flex items-center justify-between lg:hidden">
+              <Link href="/">
+                <Image src="/logo.png" alt="DesaMind" width={148} height={44} className="h-9 w-auto object-contain" />
+              </Link>
+              <span className="border border-primary-100 bg-white px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-primary-800">
+                Daftar
+              </span>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Alamat Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="email@desamind.id"
-                required
-                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all placeholder:text-gray-400"
-              />
+            <div className="mb-7">
+              <div className="mb-4 inline-flex items-center gap-2 border border-primary-100 bg-white px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-primary-700">
+                <Handshake className="h-3.5 w-3.5" />
+                Akun Warga
+              </div>
+              <h1 className="break-words text-3xl font-semibold leading-tight text-primary-950 sm:text-4xl">
+                Buat akses baru untuk layanan desa yang lebih dekat.
+              </h1>
+              <p className="mt-3 break-words text-sm leading-6 text-gray-500 sm:hidden">
+                Satu akun untuk layanan warga dan informasi desa.
+              </p>
+              <p className="mt-3 hidden break-words text-sm leading-6 text-gray-500 sm:block">
+                Gunakan satu akun untuk laporan, UMKM, kegiatan warga, dan informasi desa.
+              </p>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-widest text-gray-400">Buat Password</label>
-              <div className="relative">
-                <input
-                  type={showPass ? 'text' : 'password'}
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="Password minimal 8 karakter"
-                  required
-                  className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all placeholder:text-gray-400 pr-12"
-                />
-                <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1">
-                  {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            <form onSubmit={handleSubmit} className="w-full border border-gray-200 bg-white p-5 shadow-[0_24px_70px_rgba(15,23,42,0.10)] sm:p-7">
+              {(success || pending || error) && (
+                <div
+                  className={`mb-5 flex items-start gap-3 border px-4 py-3 text-sm font-medium ${
+                    success
+                      ? 'border-green-100 bg-green-50 text-green-700'
+                      : pending
+                        ? 'border-amber-100 bg-amber-50 text-amber-700'
+                        : 'border-red-100 bg-red-50 text-red-700'
+                  }`}
+                >
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>
+                    {success && 'Daftar berhasil. Mengalihkan...'}
+                    {pending && 'Pendaftaran berhasil. Akun menunggu persetujuan admin desa.'}
+                    {error && error}
+                  </span>
+                </div>
+              )}
+
+              <div className="space-y-5">
+                <label className="block">
+                  <span className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                    Nama Lengkap
+                  </span>
+                  <span className="relative block">
+                    <UserRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Misal: Budi Santoso"
+                      required
+                      className="h-12 w-full border border-gray-200 bg-gray-50 pl-10 pr-4 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-primary-500 focus:bg-white"
+                    />
+                  </span>
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                    Alamat Email
+                  </span>
+                  <span className="relative block">
+                    <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="email@desamind.id"
+                      required
+                      className="h-12 w-full border border-gray-200 bg-gray-50 pl-10 pr-4 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-primary-500 focus:bg-white"
+                    />
+                  </span>
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                    Password
+                  </span>
+                  <span className="relative block">
+                    <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type={showPass ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Minimal 8 karakter"
+                      required
+                      className="h-12 w-full border border-gray-200 bg-gray-50 pl-10 pr-12 text-sm text-gray-900 transition-colors placeholder:text-gray-400 focus:border-primary-500 focus:bg-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPass((current) => !current)}
+                      className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center text-gray-400 transition-colors hover:bg-white hover:text-primary-700"
+                      aria-label={showPass ? 'Sembunyikan password' : 'Tampilkan password'}
+                    >
+                      {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </span>
+                </label>
+
+                <div className="space-y-2">
+                  <div className="h-1.5 overflow-hidden bg-gray-100">
+                    <div
+                      className="h-full bg-primary-600 transition-all duration-300"
+                      style={{ width: `${passwordScore}%` }}
+                    />
+                  </div>
+                  <p className="text-[11px] font-medium text-gray-500">
+                    {passwordScore >= 80
+                      ? 'Password terlihat kuat.'
+                      : password.length
+                        ? 'Tambahkan angka, huruf besar, atau simbol agar lebih kuat.'
+                        : 'Minimal 8 karakter untuk membuat akun.'}
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading || success || !name || !email || !password}
+                  className="flex h-12 w-full items-center justify-center gap-2 bg-primary-900 px-5 text-sm font-bold text-white transition-colors hover:bg-primary-950 disabled:opacity-70"
+                >
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Selesaikan Pendaftaran'}
+                  {!loading && <ArrowRight className="h-4 w-4" />}
                 </button>
               </div>
-            </div>
+            </form>
 
-            <div className="pt-2">
-              <button
-                type="submit"
-                disabled={loading || success || !name || !email || !password}
-                className="w-full flex items-center justify-center gap-2 py-3.5 bg-primary-900 text-white rounded-xl text-sm font-semibold hover:bg-primary-950 disabled:opacity-70 transition-colors shadow-lg shadow-primary-900/20 border border-primary-900"
-              >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Selesaikan Pendaftaran'}
-                {!loading && <ArrowRight className="w-4 h-4" />}
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-10 text-center">
-            <p className="text-sm text-gray-500">
+            <p className="mt-7 text-center text-sm text-gray-500">
               Sudah punya akun?{' '}
-              <Link href="/auth/login" className="font-semibold text-primary-700 hover:text-primary-900 transition-colors">
+              <Link href="/auth/login" className="font-bold text-primary-800 transition-colors hover:text-primary-950">
                 Masuk di sini
               </Link>
             </p>
           </div>
-        </div>
+        </section>
+
+        <section className="relative hidden overflow-hidden bg-primary-950 lg:flex">
+          <Image
+            src="/gotong-royong-banner.jpg"
+            alt=""
+            fill
+            priority
+            className="object-cover"
+            sizes="55vw"
+          />
+          <div className="absolute inset-0 bg-primary-950/70" />
+          <div className="absolute inset-0 bg-[linear-gradient(245deg,rgba(13,28,27,0.95)_0%,rgba(19,61,58,0.78)_50%,rgba(13,28,27,0.52)_100%)]" />
+
+          <div className="relative z-10 flex min-h-screen w-full flex-col justify-between px-12 py-10 xl:px-16">
+            <div className="flex justify-end">
+              <Link href="/" className="inline-flex">
+                <Image
+                  src="/Logo-putih.webp"
+                  alt="DesaMind"
+                  width={168}
+                  height={48}
+                  className="h-10 w-auto object-contain"
+                />
+              </Link>
+            </div>
+
+            <div className="ml-auto max-w-xl pb-8 text-right">
+              <div className="mb-6 inline-flex items-center gap-2 border border-white/15 bg-white/10 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-primary-100">
+                <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+                Kolaborasi Warga
+              </div>
+              <h2 className="text-4xl font-semibold leading-tight text-white xl:text-5xl">
+                Mulai dari laporan kecil, tumbuh jadi gerakan desa yang nyata.
+              </h2>
+              <p className="ml-auto mt-5 max-w-lg text-sm leading-7 text-primary-100/85">
+                Akun warga menyatukan partisipasi, informasi, dan layanan desa dalam tampilan yang mudah dipakai setiap hari.
+              </p>
+
+              <div className="mt-9 ml-auto grid max-w-lg grid-cols-3 border border-white/15 bg-white/[0.07]">
+                {[
+                  ['Lapor', 'Masalah desa'],
+                  ['UMKM', 'Belanja lokal'],
+                  ['Aksi', 'Gotong royong'],
+                ].map(([value, label]) => (
+                  <div key={label} className="border-r border-white/10 px-5 py-4 last:border-r-0">
+                    <p className="text-lg font-semibold text-white">{value}</p>
+                    <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-primary-100/65">{label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between border-t border-white/10 pt-6 text-[10px] font-bold uppercase tracking-widest text-primary-100/60">
+              <span>Mode Demo Lokal</span>
+              <span className="inline-flex items-center gap-2">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                Semi-Statis
+              </span>
+            </div>
+          </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

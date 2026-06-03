@@ -2,14 +2,14 @@
 
 /**
  * components/ui/ImageUpload.tsx
- * Reusable image uploader backed by /api/upload (Supabase Storage).
+ * Reusable image uploader backed by the static API shim.
  *
  * Usage:
  *   <ImageUpload value={form.image_url} folder="gallery"
  *     onChange={(url) => setForm({ ...form, image_url: url })} />
  *
  * - Click or drag to upload. Shows a preview with a remove button.
- * - No third-party service required (uses the project's Supabase Storage).
+ * - No third-party service required.
  */
 import { useRef, useState } from 'react';
 import Image from 'next/image';
@@ -92,7 +92,7 @@ export function ImageUpload({
       {value ? (
         <div className="flex items-center gap-4 p-3 border border-green-200 bg-green-50/50 rounded-lg">
           <div className="relative w-20 h-20 shrink-0 bg-gray-100 rounded-lg overflow-hidden border border-black/5">
-            {/* next/image is configured for supabase + common hosts */}
+            {/* Preview for local/static demo upload results. */}
             <Image src={value} alt="Preview" fill className="object-cover" sizes="80px" unoptimized />
           </div>
           <div className="flex-1 min-w-0">
