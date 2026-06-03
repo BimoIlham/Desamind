@@ -6,18 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "setup:storage": "node scripts/setup-storage.mjs",
-    "seed": "node scripts/seed.mjs",
-    "create:admin": "node scripts/create-admin.mjs"
+    "lint": "eslint"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
     "@jridgewell/gen-mapping": "^0.3.13",
     "@jridgewell/sourcemap-codec": "^1.5.5",
     "@jridgewell/trace-mapping": "^0.3.31",
-    "@supabase/auth-helpers-nextjs": "^0.15.0",
-    "@supabase/supabase-js": "^2.99.3",
     "@turf/boolean-point-in-polygon": "^7.3.4",
     "@turf/helpers": "^7.3.4",
     "@types/leaflet": "^1.9.21",
@@ -25,8 +19,6 @@
     "@types/uuid": "^10.0.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",
-    "imagekit": "^6.0.0",
-    "imagekitio-react": "^4.3.0",
     "leaflet": "^1.9.4",
     "leaflet-draw": "^1.0.4",
     "lucide-react": "^0.577.0",

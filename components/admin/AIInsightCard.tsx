@@ -1,7 +1,7 @@
 'use client';
 /**
  * components/admin/AIInsightCard.tsx
- * Displays database-derived insights for the admin dashboard.
+ * Displays static-data insights for the admin dashboard.
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Sparkles, AlertTriangle, CheckCircle, Inbox, type LucideIcon } from 'lucide-react';
@@ -89,7 +89,7 @@ export function AIInsightCard() {
           <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mt-1">Insight berbasis data</p>
         </div>
         <span className="ml-auto text-[9px] font-bold uppercase tracking-widest px-3 py-1 border border-gray-200 bg-gray-50 text-gray-600">
-          DB
+          STATIC
         </span>
       </div>
 
@@ -107,7 +107,7 @@ export function AIInsightCard() {
       </div>
 
       <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mt-6 pt-4 border-t border-gray-100 text-center">
-        Diperbarui dari data database
+        Diperbarui dari data statis
       </p>
     </div>
   );

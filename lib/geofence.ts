@@ -1,16 +1,16 @@
 import { booleanPointInPolygon } from '@turf/boolean-point-in-polygon';
 import { point, polygon } from '@turf/helpers';
 import {
-  DEFAULT_APP_SETTINGS,
   normalizeBoundary,
   normalizeSettings,
   type AppSettings,
   type GeoBoundary,
 } from '@/lib/map-settings';
+import { STATIC_APP_SETTINGS } from '@/lib/static-data';
 
 export const DEFAULT_CENTER = {
-  lat: DEFAULT_APP_SETTINGS.center_lat,
-  lng: DEFAULT_APP_SETTINGS.center_lng,
+  lat: STATIC_APP_SETTINGS.center_lat,
+  lng: STATIC_APP_SETTINGS.center_lng,
 };
 
 export const LABUHAN_MARINGGAI = DEFAULT_CENTER;
@@ -30,18 +30,8 @@ let cachedSettings: AppSettings | null = null;
 
 export async function fetchSettings(options: { refresh?: boolean } = {}): Promise<AppSettings> {
   if (cachedSettings && !options.refresh) return cachedSettings;
-
-  try {
-    const res = await fetch('/api/settings', { cache: 'no-store' });
-    if (res.ok) {
-      cachedSettings = normalizeSettings(await res.json());
-      return cachedSettings;
-    }
-  } catch {
-    // Keep the map usable when the API or network is unavailable.
-  }
-
-  return DEFAULT_APP_SETTINGS;
+  cachedSettings = normalizeSettings(STATIC_APP_SETTINGS);
+  return cachedSettings;
 }
 
 export function invalidateSettingsCache() {
@@ -70,7 +60,7 @@ export function isWithinVillage(
   const {
     boundaryCoords = null,
     center = DEFAULT_CENTER,
-    radiusM = DEFAULT_APP_SETTINGS.fallback_radius_m,
+    radiusM = STATIC_APP_SETTINGS.fallback_radius_m,
   } = options ?? {};
 
   try {

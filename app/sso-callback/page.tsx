@@ -7,7 +7,7 @@ export default function SSOCallback() {
   const router = useRouter();
 
   useEffect(() => {
-    // This page is legacy from Clerk SSO, we just redirect home
+    // Legacy callback path kept as a harmless static redirect.
     const t = setTimeout(() => {
       router.push('/');
     }, 1000);

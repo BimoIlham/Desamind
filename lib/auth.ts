@@ -1,11 +1,4 @@
-/**
- * lib/auth.ts
- * Client-side auth helpers that talk to the real /api/auth endpoints
- * (backed by Supabase Auth + httpOnly session cookies).
- *
- * No passwords or tokens are stored in the browser/localStorage — the
- * session lives in secure httpOnly cookies managed by the server.
- */
+import { STATIC_USERS } from '@/lib/static-data';
 
 export type AppRole = 'warga' | 'admin';
 export type AppStatus = 'active' | 'pending' | 'suspended';
@@ -20,7 +13,6 @@ export type AuthUser = {
   created_at: string;
 };
 
-// Backwards-compatible alias (old code referenced DemoUser).
 export type DemoUser = AuthUser;
 
 export type AuthResult = {
@@ -30,55 +22,65 @@ export type AuthResult = {
   pending?: boolean;
 };
 
-/** Resolve the current logged-in user from the session cookie. */
-export async function fetchCurrentUser(): Promise<AuthUser | null> {
+const AUTH_KEY = 'desamind_static_user';
+
+function initials(name: string) {
+  return name
+    .split(' ')
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase() || 'DU';
+}
+
+function storedUser(): AuthUser | null {
+  if (typeof window === 'undefined') return null;
   try {
-    const res = await fetch('/api/auth/me', { cache: 'no-store' });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.user ?? null;
+    const raw = localStorage.getItem(AUTH_KEY);
+    return raw ? JSON.parse(raw) as AuthUser : null;
   } catch {
     return null;
   }
 }
 
+function saveUser(user: AuthUser | null) {
+  if (typeof window === 'undefined') return;
+  if (user) localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+  else localStorage.removeItem(AUTH_KEY);
+  window.dispatchEvent(new Event('auth-change'));
+}
+
+export async function fetchCurrentUser(): Promise<AuthUser | null> {
+  return storedUser();
+}
+
 export async function login(email: string, password: string): Promise<AuthResult> {
-  try {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, error: data.error ?? 'Gagal masuk.' };
-    return { ok: true, user: data.user };
-  } catch {
-    return { ok: false, error: 'Tidak dapat terhubung ke server.' };
-  }
+  void password;
+  const normalized = email.trim().toLowerCase();
+  const user =
+    STATIC_USERS.find((item) => item.email.toLowerCase() === normalized) ??
+    (normalized.includes('admin') ? STATIC_USERS[0] : STATIC_USERS[1]);
+
+  saveUser(user);
+  return { ok: true, user };
 }
 
 export async function register(name: string, email: string, password: string): Promise<AuthResult> {
-  try {
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password }),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, error: data.error ?? 'Gagal mendaftar.' };
-    return { ok: true, user: data.user, pending: Boolean(data.pending) };
-  } catch {
-    return { ok: false, error: 'Tidak dapat terhubung ke server.' };
-  }
+  void password;
+  const user: AuthUser = {
+    id: `static-user-${Date.now()}`,
+    email: email.trim(),
+    name: name.trim() || 'Warga Demo',
+    role: 'warga',
+    status: 'active',
+    avatar: initials(name),
+    created_at: new Date().toISOString(),
+  };
+
+  saveUser(user);
+  return { ok: true, user, pending: false };
 }
 
 export async function logout(): Promise<void> {
-  try {
-    await fetch('/api/auth/logout', { method: 'POST' });
-  } catch {
-    // ignore
-  }
-  if (typeof window !== 'undefined') {
-    window.dispatchEvent(new Event('auth-change'));
-  }
+  saveUser(null);
 }

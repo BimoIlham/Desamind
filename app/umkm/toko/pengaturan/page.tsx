@@ -105,7 +105,7 @@ export default function StoreSettingsPage() {
           </span>
           <div>
             <h2 className="font-bold text-gray-900">Identitas Toko</h2>
-            <p className="text-xs text-gray-500">Perubahan langsung tersimpan ke database toko Anda.</p>
+            <p className="text-xs text-gray-500">Perubahan langsung tersimpan di mode demo lokal.</p>
           </div>
         </div>
 

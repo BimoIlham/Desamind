@@ -322,7 +322,7 @@ export default function AdminMapSettingsPage() {
         <div className="flex items-center gap-3 px-5 py-4 bg-red-50 border border-red-100 text-red-700 text-sm font-medium">
           <AlertTriangle className="w-5 h-5 shrink-0" />
           <span>
-            {statusMessage || 'Gagal menyimpan.'} Pastikan tabel <code className="text-xs bg-red-100 px-1 rounded">app_settings</code> sudah dibuat di Supabase menggunakan file <code className="text-xs bg-red-100 px-1 rounded">supabase/schema.sql</code>.
+            {statusMessage || 'Gagal menyimpan.'} Mode statis menyimpan perubahan sebagai data demo lokal selama sesi berjalan.
           </span>
         </div>
       )}

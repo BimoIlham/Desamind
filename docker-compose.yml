@@ -1,5 +1,5 @@
 # =====================================================================
-# DesaMind — Docker Compose
+# DesaMind - Docker Compose
 # Jalankan:  docker compose up -d --build
 # Akses   :  http://localhost:3000
 # =====================================================================
@@ -12,11 +12,4 @@ services:
     container_name: desamind
     ports:
       - "3000:3000"
-    # Semua variabel (Supabase, Gemini, dll) dibaca dari .env.local saat
-    # container berjalan. Di aplikasi ini Supabase hanya dipakai sisi server,
-    # jadi cukup runtime env — tidak perlu build arg.
-    env_file:
-      - .env.local
-    environment:
-      NODE_ENV: production
     restart: unless-stopped

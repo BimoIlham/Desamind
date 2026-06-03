@@ -3,18 +3,12 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 const nextConfig: NextConfig = {
-  // Produce a minimal, self-contained server bundle for Docker images.
-  output: 'standalone',
   turbopack: {
     root: process.cwd(),
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '*.supabase.co',
-        pathname: '/storage/v1/object/public/**',
-      },
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
@@ -50,14 +44,6 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'tse4.mm.bing.net',
-      },
-      {
-        protocol: 'https',
-        hostname: 'img.clerk.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'ik.imagekit.io',
       },
     ],
   },

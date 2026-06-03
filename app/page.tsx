@@ -2,7 +2,7 @@
  * app/page.tsx — Homepage (Server Component)
  *
  * Tidak ada 'use client' — seluruh halaman di-render di server.
- * Data (laporan & stats) di-fetch langsung via Supabase server client,
+ * Data (laporan & stats) dibaca dari helper data statis,
  * menghilangkan round-trip browser → API → browser.
  *
  * Komponen interaktif (animasi Framer Motion) sudah di-encapsulate

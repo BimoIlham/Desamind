@@ -1,7 +1,9 @@
 # Desa Cerdas
 
-Aplikasi web desa cerdas berbasis Next.js untuk layanan warga, laporan,
+Aplikasi web desa cerdas semi-statis berbasis Next.js untuk layanan warga, laporan,
 marketplace UMKM, pengumuman, edukasi, transparansi, peta, dan dashboard admin.
+Halaman tetap dirender ringan oleh Next.js, sementara endpoint `/api/*` memakai
+data demo lokal tanpa koneksi ke layanan eksternal atau secret environment.
 
 ## Menjalankan Project
 
@@ -19,25 +21,19 @@ npm run dev
 npm run build
 npm run start
 npm run lint
-npm run setup:storage
-npm run seed
-npm run create:admin
 ```
 
 ## Konfigurasi
 
-Salin dan isi environment variable yang dibutuhkan di `.env.local`.
-
-Fitur inti memakai Supabase untuk database, auth, dan storage. Fitur tambahan
-seperti AI, pembayaran, dan ongkir dapat diaktifkan dengan API key masing-masing.
+Tidak ada konfigurasi backend wajib. Untuk produksi semi-statis, jalankan
+`npm run build` lalu `npm run start`.
 
 ## Struktur Singkat
 
-- `app/` - halaman dan API routes.
+- `app/` - halaman aplikasi dan API demo lokal.
 - `components/` - komponen UI.
-- `lib/` - helper, tipe data, dan integrasi layanan.
-- `scripts/` - script setup, seed, dan admin.
-- `supabase/` - skema dan migrasi database.
+- `lib/` - helper, tipe data, dan data semi-statis.
+- `data/` - aset data pendukung.
 - `locales/` - terjemahan.
 
 ## Build Produksi

@@ -1,5 +1,4 @@
-import { NextResponse } from 'next/server';
-import { getSupabaseServerClient } from '@/lib/supabase-server';
+import { STATIC_TABLES } from '@/lib/static-data';
 
 type QueryOptions = {
   filters?: Record<string, string | number | boolean | null | undefined>;
@@ -9,7 +8,7 @@ type QueryOptions = {
 };
 
 export function jsonError(message: string, status = 500) {
-  return NextResponse.json({ error: message }, { status });
+  return Response.json({ error: message }, { status });
 }
 
 export function cleanPayload<T extends Record<string, unknown>>(payload: T) {
@@ -18,125 +17,88 @@ export function cleanPayload<T extends Record<string, unknown>>(payload: T) {
   );
 }
 
+function tableRows(table: string) {
+  return [...(STATIC_TABLES[table] ?? [])] as Record<string, unknown>[];
+}
+
+function matchesFilters(row: Record<string, unknown>, filters: QueryOptions['filters'] = {}) {
+  return Object.entries(filters).every(([key, value]) => {
+    if (value === undefined || value === null || value === '') return true;
+    return row[key] === value;
+  });
+}
+
 export async function listRows<T>(
   table: string,
-  _fallback: T[] = [],
+  fallback: T[] = [],
   options: QueryOptions = {}
 ) {
-  const supabase = getSupabaseServerClient();
-  if (!supabase) return [] as T[];
-
-  let query = supabase.from(table).select(options.select ?? '*');
-
-  for (const [key, value] of Object.entries(options.filters ?? {})) {
-    if (value !== undefined && value !== null && value !== '') {
-      query = query.eq(key, value);
-    }
-  }
+  void fallback;
+  let rows = tableRows(table).filter((row) => matchesFilters(row, options.filters));
 
   if (options.order) {
-    query = query.order(options.order.column, {
-      ascending: options.order.ascending ?? true,
+    const { column, ascending = true } = options.order;
+    rows = rows.sort((a, b) => {
+      const av = a[column];
+      const bv = b[column];
+      const at = typeof av === 'string' && !Number.isNaN(Date.parse(av)) ? Date.parse(av) : av;
+      const bt = typeof bv === 'string' && !Number.isNaN(Date.parse(bv)) ? Date.parse(bv) : bv;
+      if (at === bt) return 0;
+      return (at ?? '') > (bt ?? '') ? (ascending ? 1 : -1) : (ascending ? -1 : 1);
     });
   }
 
-  if (options.limit) query = query.limit(options.limit);
-
-  const { data, error } = await query;
-  if (error) {
-    console.error(`[API] Failed to list ${table}:`, error);
-    return [] as T[];
-  }
-
-  return (data ?? []) as T[];
+  if (options.limit) rows = rows.slice(0, options.limit);
+  return rows as T[];
 }
 
 export async function getRowById<T>(
   table: string,
   id: string,
-  _fallback: T | null = null,
+  fallback: T | null = null,
   select = '*'
 ) {
-  const supabase = getSupabaseServerClient();
-  if (!supabase) return null;
-
-  const { data, error } = await supabase
-    .from(table)
-    .select(select)
-    .eq('id', id)
-    .maybeSingle();
-
-  if (error) {
-    console.error(`[API] Failed to get ${table}/${id}:`, error);
-    return null;
-  }
-
-  return (data as T | null) ?? null;
+  void fallback;
+  void select;
+  return (tableRows(table).find((row) => row.id === id) as T | undefined) ?? null;
 }
 
 export async function countRows(
   table: string,
   filters: QueryOptions['filters'] = {}
 ) {
-  const supabase = getSupabaseServerClient();
-  if (!supabase) return null;
-
-  let query = supabase.from(table).select('*', { count: 'exact', head: true });
-  for (const [key, value] of Object.entries(filters)) {
-    if (value !== undefined && value !== null && value !== '') {
-      query = query.eq(key, value);
-    }
-  }
-
-  const { count, error } = await query;
-  if (error) {
-    console.error(`[API] Failed to count ${table}:`, error);
-    return null;
-  }
-
-  return count ?? 0;
+  return tableRows(table).filter((row) => matchesFilters(row, filters)).length;
 }
 
 export async function insertRow<T>(
   table: string,
   payload: Record<string, unknown>,
-  _fallback?: T
+  fallback?: T
 ) {
-  const supabase = getSupabaseServerClient();
-  if (!supabase) return { data: null, error: new Error('Database is not configured') };
-
-  const { data, error } = await supabase
-    .from(table)
-    .insert(cleanPayload(payload))
-    .select()
-    .single();
-
-  return { data: data as T | null, error };
+  void table;
+  void fallback;
+  return {
+    data: cleanPayload({ id: `static-${Date.now()}`, created_at: new Date().toISOString(), ...payload }) as T,
+    error: null,
+  };
 }
 
 export async function updateRow<T>(
   table: string,
   id: string,
   payload: Record<string, unknown>,
-  _fallback?: T
+  fallback?: T
 ) {
-  const supabase = getSupabaseServerClient();
-  if (!supabase) return { data: null, error: new Error('Database is not configured') };
-
-  const { data, error } = await supabase
-    .from(table)
-    .update(cleanPayload({ ...payload, updated_at: new Date().toISOString() }))
-    .eq('id', id)
-    .select()
-    .single();
-
-  return { data: data as T | null, error };
+  void table;
+  void fallback;
+  return {
+    data: cleanPayload({ id, ...payload, updated_at: new Date().toISOString() }) as T,
+    error: null,
+  };
 }
 
 export async function deleteRow(table: string, id: string) {
-  const supabase = getSupabaseServerClient();
-  if (!supabase) return { error: new Error('Database is not configured') };
-
-  const { error } = await supabase.from(table).delete().eq('id', id);
-  return { error };
+  void table;
+  void id;
+  return { error: null };
 }

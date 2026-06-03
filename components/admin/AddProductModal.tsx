@@ -150,7 +150,7 @@ export default function AddProductModal({ isOpen, onClose, onSuccess }: AddProdu
             />
           </div>
 
-          {/* Image upload via Supabase Storage */}
+          {/* Image upload via static demo handler */}
           <div className="space-y-1">
             <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Foto Produk</label>
             <ImageUpload folder="products" value={formData.image_url} onChange={(url) => setFormData({ ...formData, image_url: url })} />

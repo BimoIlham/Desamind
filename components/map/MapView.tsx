@@ -3,7 +3,7 @@
  * components/map/MapView.tsx — Interactive Map v3
  * Centered on Labuhan Maringgai, Lampung Timur.
  * Features: tile layer switcher, animated pulsing markers,
- *   live Supabase report data, rich popups, and mini stats bar.
+ *   static report data, rich popups, and mini stats bar.
  * MUST be loaded via dynamic import with { ssr: false }.
  */
 import { useEffect, useState, useMemo } from 'react';
