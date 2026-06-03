@@ -8,12 +8,18 @@ import { MapPin, Clock, ThumbsUp, MessageCircle, ArrowRight } from 'lucide-react
 import type { Report } from '@/lib/types';
 import { StatusBadge, CategoryBadge } from './Badge';
 import { formatRelativeTime } from '@/lib/utils';
+import { useLocale } from 'next-intl';
 
-export function ReportCard({ report }: { report: Report }) {
+export function ReportCard({ report, priority = false }: { report: Report; priority?: boolean }) {
+  const locale = useLocale();
+  const title = locale === 'en' && report.title_en ? report.title_en : report.title;
+  const description = locale === 'en' && report.description_en ? report.description_en : report.description;
+  const category = locale === 'en' && report.category_en ? report.category_en : report.category;
+
   return (
     <Link
       href={`/laporan/${report.id}`}
-      className="group bg-white overflow-hidden border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col"
+      className="group bg-white overflow-hidden border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col h-full"
     >
       {/* Image */}
       <div className="relative h-44 overflow-hidden bg-gray-100">
@@ -22,6 +28,7 @@ export function ReportCard({ report }: { report: Report }) {
             src={report.image_url}
             alt={report.title}
             fill
+            priority={priority}
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
@@ -34,17 +41,17 @@ export function ReportCard({ report }: { report: Report }) {
           <StatusBadge status={report.status} />
         </div>
         <div className="absolute top-3 right-3">
-          <CategoryBadge category={report.category} />
+          <CategoryBadge category={category} />
         </div>
       </div>
 
       {/* Content */}
       <div className="p-4 flex flex-col flex-1">
         <h3 className="font-bold text-gray-900 mb-1.5 line-clamp-2 leading-snug group-hover:text-primary-700 transition-colors">
-          {report.title}
+          {title}
         </h3>
         <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed mb-3 flex-1">
-          {report.description}
+          {description}
         </p>
 
         {/* Meta row */}

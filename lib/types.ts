@@ -3,8 +3,11 @@ export type Report = {
   user_id: string;
   author_name: string;
   title: string;
+  title_en?: string;
   description: string;
+  description_en?: string;
   category: string;
+  category_en?: string;
   status: 'pending' | 'in_progress' | 'completed';
   lat: number | null;
   lng: number | null;
@@ -20,12 +23,15 @@ export type Product = {
   store_id?: string | null;
   seller_name: string;
   name: string;
+  name_en?: string;
   description: string | null;
+  description_en?: string | null;
   price: number;
   phone_number: string | null;
   whatsapp?: string | null;
   image_url: string | null;
   category: string;
+  category_en?: string;
   stock?: number;
   featured?: boolean;
   sales_count?: number;
@@ -37,11 +43,14 @@ export type Product = {
 export type Article = {
   id: string;
   title: string;
+  title_en?: string;
   excerpt: string | null;
+  excerpt_en?: string | null;
   content?: string | null;
   image_url: string | null;
   author: string;
   category: string;
+  category_en?: string;
   is_published?: boolean;
   created_at: string;
 };

@@ -10,6 +10,7 @@ import { Phone, Star, ShoppingBag, TrendingUp, Award, ShoppingCart, Check } from
 import type { Product } from '@/lib/types';
 import { useCart } from '@/components/marketplace/CartContext';
 import { useState } from 'react';
+import { useLocale } from 'next-intl';
 
 function formatRupiah(n: number) {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
@@ -19,20 +20,25 @@ export function ProductCard({ product }: { product: Product }) {
   const router = useRouter();
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
+  const locale = useLocale();
 
-  const waText = encodeURIComponent(`Halo ${product.seller_name}, saya tertarik dengan produk "${product.name}" yang saya lihat di DesaMind. Apakah masih tersedia?`);
+  const name = locale === 'en' && product.name_en ? product.name_en : product.name;
+  const description = locale === 'en' && product.description_en ? product.description_en : product.description;
+  const category = locale === 'en' && product.category_en ? product.category_en : product.category;
+
+  const waText = encodeURIComponent(`Halo ${product.seller_name}, saya tertarik dengan produk "${name}" yang saya lihat di DesaMind. Apakah masih tersedia?`);
 
   function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
     addItem({
       id: product.id,
-      name: product.name,
-      description: product.description ?? '',
+      name: name,
+      description: description ?? '',
       price: product.price,
       image_url: product.image_url ?? '',
       seller_name: product.seller_name,
-      category: product.category,
+      category: category,
       phone_number: product.phone_number || '',
       stock: product.stock ?? 0,
       store_id: (product as any).store_id || undefined,
@@ -50,7 +56,7 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="relative h-48 overflow-hidden">
           <Image
             src={product.image_url || '/file.svg'}
-            alt={product.name}
+            alt={name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
@@ -71,9 +77,9 @@ export function ProductCard({ product }: { product: Product }) {
 
         {/* Content */}
         <div className="p-4 flex flex-col flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-primary-600 mb-1">{product.category}</p>
-          <h3 className="font-bold text-gray-900 mb-1 line-clamp-2 leading-snug">{product.name}</h3>
-          <p className="text-xs text-gray-500 mb-3 line-clamp-2 flex-1">{product.description}</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-primary-600 mb-1">{category}</p>
+          <h3 className="font-bold text-gray-900 mb-1 line-clamp-2 leading-snug">{name}</h3>
+          <p className="text-xs text-gray-500 mb-3 line-clamp-2 flex-1">{description}</p>
 
           {/* Rating + sales */}
           <div className="flex flex-col gap-1 mb-3">

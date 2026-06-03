@@ -3,7 +3,6 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 const nextConfig: NextConfig = {
-  output: 'export',
   turbopack: {
     root: process.cwd(),
   },
@@ -13,6 +12,10 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'loremflickr.com',
       },
       {
         protocol: 'https',
