@@ -63,7 +63,9 @@ export default function KomunitasPage() {
                     </div>
                   )}
                   <div>
-                    <h3 className="font-bold text-primary-950 text-sm leading-snug mb-4 group-hover:text-primary-600 transition-colors">{article.title}</h3>
+                    <h3 className="font-bold text-primary-950 text-sm leading-snug mb-4 group-hover:text-primary-600 transition-colors">
+                      {locale === 'en' && article.title_en ? article.title_en : article.title}
+                    </h3>
                     <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{new Date(article.created_at).toLocaleDateString(locale === 'id' ? 'id-ID' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
                   </div>
                 </Link>

@@ -53,8 +53,9 @@ export function HomeLatestReports({
                 animation="fade-up"
                 delay={i * 0.15}
                 key={report.id}
+                className="h-full"
               >
-                <ReportCard report={report} />
+                <ReportCard report={report} priority={i < 4} />
               </AnimatedSection>
             ))}
           </div>

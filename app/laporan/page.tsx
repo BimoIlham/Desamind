@@ -116,7 +116,7 @@ export default function LaporanPage() {
         <CardGridSkeleton count={6} cols={4} />
       ) : filtered.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {filtered.map((report) => <ReportCard key={report.id} report={report} />)}
+          {filtered.map((report, i) => <ReportCard key={report.id} report={report} priority={i < 8} />)}
         </div>
       ) : (
         <div className="py-14 lg:py-16 text-center">
