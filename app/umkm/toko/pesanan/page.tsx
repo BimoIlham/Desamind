@@ -228,7 +228,7 @@ export default function SellerOrdersPage() {
                      )}
                      <div>
                        <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400">Metode: </span>
-                       <span className="font-semibold text-gray-800 uppercase">{order.payment_method || 'midtrans'}</span>
+                       <span className="font-semibold text-gray-800 uppercase">{order.payment_method || 'demo-digital'}</span>
                      </div>
                    </div>
 

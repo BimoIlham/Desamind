@@ -4,7 +4,7 @@
  * app/admin/layout.tsx
  * Admin sidebar layout — wraps all /admin pages.
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -25,11 +25,13 @@ import {
   Menu,
   X,
   ChevronDown,
+  Home,
   Megaphone,
   Camera,
   PieChart,
   Loader2,
   ShieldAlert,
+  User,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
@@ -41,6 +43,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const { user, isAdmin, loading, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
   const isMapSection = pathname.startsWith('/peta') || pathname.startsWith('/admin/pengaturan-peta');
   const isUmkmSection = pathname.startsWith('/admin/umkm');
   const [mapOpen, setMapOpen] = useState(isMapSection);
@@ -56,7 +60,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     setMobileOpen(false);
+    setProfileOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Keep map group open when navigating within it
   useEffect(() => {
@@ -161,16 +177,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const SidebarContent = (
     <div className="flex flex-col h-full bg-white border-r border-gray-200">
-      <div className="px-6 py-6 border-b border-gray-200 flex flex-col gap-2 shrink-0">
-        <Link href="/">
-          <Image src="/logo.png" alt="DesaMind" width={140} height={36} className="h-8 w-auto object-contain mb-2" />
+      <div className="px-8 h-20 border-b border-gray-200 flex items-center shrink-0">
+        <Link href="/" className="flex items-center">
+          <Image src="/logo.png" alt="DesaMind" width={260} height={76} className="h-16 w-auto object-contain" priority />
         </Link>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center justify-center w-5 h-5 border border-primary-200 bg-primary-50 text-primary-800">
-            <Sparkles className="w-3 h-3" />
-          </span>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{t('admin_panel')}</p>
-        </div>
       </div>
 
       <nav className="flex-1 px-4 py-6 space-y-4 overflow-y-auto w-full overflow-x-hidden">
@@ -256,10 +266,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Settings className="w-4.5 h-4.5 text-gray-400" />
           {t('settings')}
         </Link>
-        <Link href="/akun/pengaturan" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all border border-transparent">
-          <Settings className="w-4.5 h-4.5 text-gray-400" />
-          Pengaturan Akun
-        </Link>
         <button onClick={async () => { await logout(); router.replace('/auth/login'); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 border border-transparent hover:border-red-100 transition-all">
           <LogOut className="w-4.5 h-4.5 text-red-500" />
           {t('logout')}
@@ -271,7 +277,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex min-h-screen bg-bg">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 shrink-0 sticky top-0 h-screen">
+      <aside className="hidden md:flex flex-col w-72 shrink-0 sticky top-0 h-screen">
         {SidebarContent}
       </aside>
 
@@ -279,7 +285,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {mobileOpen && (
         <div className="fixed inset-0 z-50 md:hidden flex">
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <div className="relative w-64 max-w-[80%] h-full flex flex-col shadow-2xl transition-transform animate-in slide-in-from-left">
+          <div className="relative w-72 max-w-[86%] h-full flex flex-col shadow-2xl transition-transform animate-in slide-in-from-left">
             <button
               onClick={() => setMobileOpen(false)}
               className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 z-50 rounded-lg hover:bg-gray-100/50"
@@ -294,27 +300,81 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile & Desktop Header with Profile */}
-        <header className="sticky top-0 z-30 bg-white border-b border-gray-200 px-4 md:px-8 py-3 shrink-0 flex items-center justify-between shadow-sm">
+        <header className="sticky top-0 z-30 bg-white border-b border-gray-200 px-4 md:px-8 h-20 shrink-0 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-3">
             <button onClick={() => setMobileOpen(true)} className="md:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
               <Menu className="w-5 h-5" />
             </button>
             <div className="md:hidden">
-              <Image src="/logo.png" alt="DesaMind" width={110} height={28} className="h-6 w-auto object-contain" />
+              <Image src="/logo.png" alt="DesaMind" width={150} height={44} className="h-10 w-auto object-contain" />
             </div>
             {/* Desktop breadcrumb/title */}
-            <div className="hidden md:flex items-center gap-1.5 px-3 py-1 bg-primary-50 rounded-full border border-primary-100">
+            <div className="hidden md:flex items-center gap-2 px-4 h-9 bg-primary-50 rounded-full border border-primary-100">
               <Sparkles className="w-3 h-3 text-primary-600" />
-              <span className="text-[10px] uppercase tracking-widest font-bold text-primary-700">Administrator</span>
+              <span className="text-[11px] uppercase tracking-widest font-bold text-primary-700">Administrator</span>
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
-             <div className="hidden sm:flex flex-col items-end">
-                <span className="text-sm font-bold text-gray-800">{user?.name ?? 'Admin DesaMind'}</span>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-primary-600">Administrator</span>
-             </div>
-             <div className="w-8 h-8 rounded-full bg-primary-800 flex items-center justify-center text-white text-[11px] font-bold ring-2 ring-white shadow-sm">{user?.avatar ?? 'AD'}</div>
+          <div ref={profileRef} className="relative flex items-center gap-3 md:gap-4">
+             <button
+               type="button"
+               onClick={() => setProfileOpen((open) => !open)}
+               className="flex items-center gap-3 md:gap-4 rounded-2xl px-2 py-1.5 hover:bg-gray-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+               aria-haspopup="menu"
+               aria-expanded={profileOpen}
+             >
+               <span className="hidden sm:flex flex-col items-end">
+                  <span className="text-sm md:text-[15px] font-bold text-gray-800 leading-tight">{user?.name ?? 'Admin DesaMind'}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-primary-600">Administrator</span>
+               </span>
+               <span className="w-10 h-10 rounded-full bg-primary-800 flex items-center justify-center text-white text-[12px] font-bold ring-2 ring-white shadow-sm">{user?.avatar ?? 'AD'}</span>
+               <ChevronDown className={cn('hidden sm:block w-4 h-4 text-gray-400 transition-transform duration-200', profileOpen ? 'rotate-180' : '')} />
+             </button>
+
+             {profileOpen && (
+               <div className="absolute right-0 top-14 w-64 bg-white border border-gray-200 shadow-xl rounded-2xl overflow-hidden z-50" role="menu">
+                 <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100 bg-gray-50">
+                   <div className="w-10 h-10 rounded-full bg-primary-800 flex items-center justify-center text-white text-[12px] font-bold shrink-0">
+                     {user?.avatar ?? 'AD'}
+                   </div>
+                   <div className="min-w-0">
+                     <p className="text-sm font-bold text-gray-900 truncate">{user?.name ?? 'Admin DesaMind'}</p>
+                     <p className="text-[11px] text-gray-500 truncate">{user?.email ?? 'admin@desamind.local'}</p>
+                   </div>
+                 </div>
+
+                 <div className="py-2">
+                   <Link href="/admin/pengaturan" className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors" role="menuitem">
+                     <User className="w-4 h-4 text-gray-400" />
+                     Profil Admin
+                   </Link>
+                   <Link href="/admin/laporan" className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors" role="menuitem">
+                     <FileText className="w-4 h-4 text-gray-400" />
+                     Laporan
+                   </Link>
+                   <Link href="/" className="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors" role="menuitem">
+                     <Home className="w-4 h-4 text-gray-400" />
+                     Lihat Situs
+                   </Link>
+                 </div>
+
+                 <div className="border-t border-gray-100 py-2">
+                   <button
+                     type="button"
+                     onClick={async () => {
+                       await logout();
+                       setProfileOpen(false);
+                       router.replace('/auth/login');
+                     }}
+                     className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors"
+                     role="menuitem"
+                   >
+                     <LogOut className="w-4 h-4" />
+                     {t('logout')}
+                   </button>
+                 </div>
+               </div>
+             )}
           </div>
         </header>
 

@@ -2,7 +2,7 @@ import { isStaticApiUrl, resolveStaticApi } from '@/lib/static-api';
 
 export async function fetchJson<T>(url: string, fallback: T): Promise<T> {
   try {
-    if (typeof window === 'undefined' && isStaticApiUrl(url)) {
+    if (isStaticApiUrl(url)) {
       const result = await resolveStaticApi(url);
       return result.ok ? result.data as T : fallback;
     }
@@ -25,7 +25,7 @@ export async function sendJson<T>(
   fallback: T
 ): Promise<T> {
   try {
-    if (typeof window === 'undefined' && isStaticApiUrl(url)) {
+    if (isStaticApiUrl(url)) {
       const result = await resolveStaticApi(url, init);
       return result.ok ? result.data as T : fallback;
     }

@@ -235,7 +235,7 @@ function OrderList() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                           <div>
                             <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mb-1">Metode Bayar</p>
-                            <p className="font-semibold text-gray-800 uppercase">{order.payment_method || 'midtrans'}</p>
+                            <p className="font-semibold text-gray-800 uppercase">{order.payment_method || 'demo-digital'}</p>
                           </div>
                           {order.shipping_address && (
                             <div className="md:col-span-2">
