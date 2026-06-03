@@ -206,10 +206,10 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center">
           <AnimatedSection as="div" animation="fade-from-left" className="w-full aspect-[16/9] relative bg-gray-200">
             <Image
-              src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=1200&auto=format&fit=crop"
+              src="/dampaksosial.png"
               alt="Dampak Sosial DesaMind"
               fill
-              className="object-cover"
+              className="object-cover object-[75%_center]"
             />
           </AnimatedSection>
 
