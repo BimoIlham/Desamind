@@ -19,7 +19,7 @@ export type OfficialBoundaryCandidate = {
   lat: number;
   lng: number;
   displayName: string;
-  source: 'local_geojson' | 'wilayah_id';
+  source: 'local_geojson';
   sourceLabel: string;
   boundary: GeoBoundary;
   score: number;
@@ -39,22 +39,6 @@ type GeoJsonFeature = {
   properties?: Record<string, unknown> | null;
   geometry?: unknown;
 };
-
-type WilayahRegion = {
-  code?: string;
-  name?: string;
-  level?: BoundaryRegionLevel;
-  tipe?: string;
-  nama_kecamatan?: string;
-  nama_kabupaten?: string;
-  nama_provinsi?: string;
-  lat?: number;
-  lng?: number;
-};
-
-const REQUEST_TIMEOUT_MS = 8000;
-const WILAYAH_ID_BASE_URL =
-  process.env.WILAYAH_ID_BASE_URL ?? 'https://wilayah-id-restapi.vercel.app/api/v1';
 
 const PROPERTY_ALIASES = {
   village: [
@@ -134,11 +118,6 @@ function stringValue(value: unknown) {
   return typeof value === 'string' || typeof value === 'number' ? String(value).trim() : '';
 }
 
-function finiteNumber(value: unknown) {
-  const numberValue = typeof value === 'string' ? Number(value) : value;
-  return typeof numberValue === 'number' && Number.isFinite(numberValue) ? numberValue : null;
-}
-
 function propValue(properties: Record<string, unknown>, aliases: string[]) {
   const normalizedAliases = new Set(aliases.map((alias) => alias.toLowerCase()));
 
@@ -157,14 +136,6 @@ function allPropertyText(properties: Record<string, unknown>) {
     .map(stringValue)
     .filter(Boolean)
     .join(' ');
-}
-
-function buildSearchTerms(identity: BoundaryIdentity) {
-  return uniqueStrings([
-    identity.village_name,
-    identity.district_name,
-    identity.city_name,
-  ]);
 }
 
 function scoreCorpus({
@@ -337,155 +308,12 @@ async function searchLocalGeoJson(identity: BoundaryIdentity): Promise<OfficialB
   }).sort((a, b) => b.score - a.score);
 }
 
-async function fetchJson<T>(url: string): Promise<T | null> {
-  try {
-    const response = await fetch(url, {
-      cache: 'no-store',
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-      headers: {
-        Accept: 'application/json, application/geo+json',
-        'Accept-Language': 'id,en',
-        'User-Agent': 'DesaCerdas/1.0 boundary-search',
-      },
-    });
-
-    if (!response.ok) return null;
-    return await response.json() as T;
-  } catch {
-    return null;
-  }
-}
-
-function regionDisplayName(region: WilayahRegion) {
-  return displayName([
-    region.name,
-    region.nama_kecamatan,
-    region.nama_kabupaten,
-    region.nama_provinsi,
-    'Indonesia',
-  ]);
-}
-
-function regionCorpus(region: WilayahRegion) {
-  return normalizeText([
-    region.name,
-    region.level,
-    region.tipe,
-    region.nama_kecamatan,
-    region.nama_kabupaten,
-    region.nama_provinsi,
-    'Indonesia',
-  ].filter(Boolean).join(' '));
-}
-
-function scoreWilayahRegion(region: WilayahRegion, identity: BoundaryIdentity) {
-  if (!region.name || !region.level) return -Infinity;
-  return scoreCorpus({
-    corpus: regionCorpus(region),
-    name: region.name,
-    level: region.level,
-    identity,
-  });
-}
-
-function toOfficialRegion(region: WilayahRegion): OfficialBoundaryCandidate['region'] {
-  if (!region.name || !region.level) return undefined;
-
-  return {
-    code: region.code,
-    name: region.name,
-    level: region.level,
-    village_name: region.level === 'village' ? region.name : undefined,
-    district_name: region.level === 'district' ? region.name : region.nama_kecamatan,
-    city_name: region.level === 'regency' ? region.name : region.nama_kabupaten,
-    province_name: region.level === 'province' ? region.name : region.nama_provinsi,
-  };
-}
-
-function boundaryEndpointForRegion(region: WilayahRegion) {
-  if (!region.code || !region.level) return null;
-  const resource: Record<BoundaryRegionLevel, string> = {
-    province: 'provinces',
-    regency: 'regencies',
-    district: 'districts',
-    village: 'villages',
-  };
-  return `${WILAYAH_ID_BASE_URL}/boundaries/${resource[region.level]}/${encodeURIComponent(region.code)}?geometry=true`;
-}
-
-async function fetchWilayahBoundary(region: WilayahRegion, score: number): Promise<OfficialBoundaryCandidate | null> {
-  const endpoint = boundaryEndpointForRegion(region);
-  if (!endpoint) return null;
-
-  const data = await fetchJson<unknown>(endpoint);
-  const boundary = normalizeBoundary(data);
-  if (!boundary) return null;
-
-  const center = getBoundaryCenter(boundary);
-  const lat = finiteNumber(region.lat) ?? center?.[0];
-  const lng = finiteNumber(region.lng) ?? center?.[1];
-  if (lat == null || lng == null) return null;
-
-  return {
-    lat,
-    lng,
-    displayName: regionDisplayName(region),
-    source: 'wilayah_id',
-    sourceLabel: 'Batas Administrasi Kemendagri 2024',
-    boundary,
-    score: score + 45,
-    region: toOfficialRegion(region),
-  };
-}
-
-async function searchWilayahId(identity: BoundaryIdentity): Promise<OfficialBoundaryCandidate[]> {
-  if (process.env.WILAYAH_ID_BOUNDARY_ENABLED === 'false') return [];
-
-  const terms = buildSearchTerms(identity).slice(0, 6);
-  if (!terms.length) return [];
-
-  const responses = await Promise.all(terms.map((term) => {
-    const url = `${WILAYAH_ID_BASE_URL}/regions/search?q=${encodeURIComponent(term)}`;
-    return fetchJson<{ data?: WilayahRegion[] }>(url);
-  }));
-
-  const seen = new Set<string>();
-  const regions = responses
-    .flatMap((response) => response?.data ?? [])
-    .filter((region) => {
-      if (!region.code || !region.level || !region.name) return false;
-      const key = `${region.level}:${region.code}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    })
-    .map((region) => ({
-      region,
-      score: scoreWilayahRegion(region, identity),
-    }))
-    .filter((item) => item.score >= 45)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 5);
-
-  const boundaries = await Promise.all(
-    regions.map((item) => fetchWilayahBoundary(item.region, item.score))
-  );
-
-  return boundaries
-    .filter((candidate): candidate is OfficialBoundaryCandidate => candidate !== null)
-    .sort((a, b) => b.score - a.score);
-}
-
 export async function searchOfficialBoundaries({
   identity,
 }: {
   identity: BoundaryIdentity;
 }) {
-  const local = await searchLocalGeoJson(identity);
-  if (local[0]?.score >= 95) return local;
-
-  const wilayah = await searchWilayahId(identity);
-  return [...local, ...wilayah].sort((a, b) => b.score - a.score);
+  return searchLocalGeoJson(identity);
 }
 
 export function applyRegionToIdentity(

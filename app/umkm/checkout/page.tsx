@@ -7,18 +7,57 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 
+const STATIC_REGIONS = [
+  {
+    id: '18',
+    name: 'Lampung',
+    cities: [
+      {
+        id: '1807',
+        name: 'Kabupaten Lampung Timur',
+        districts: [
+          { id: '180704', name: 'Labuhan Maringgai' },
+          { id: '180705', name: 'Melinting' },
+          { id: '180706', name: 'Pasir Sakti' },
+        ],
+      },
+      {
+        id: '1871',
+        name: 'Kota Bandar Lampung',
+        districts: [
+          { id: '187101', name: 'Tanjung Karang Pusat' },
+          { id: '187102', name: 'Teluk Betung Selatan' },
+        ],
+      },
+    ],
+  },
+  {
+    id: '31',
+    name: 'DKI Jakarta',
+    cities: [
+      {
+        id: '3171',
+        name: 'Jakarta Selatan',
+        districts: [
+          { id: '317101', name: 'Kebayoran Baru' },
+          { id: '317102', name: 'Pasar Minggu' },
+        ],
+      },
+    ],
+  },
+];
+
 export default function CheckoutPage() {
   const { items, total, clear, updateQty, removeItem, validateCart, isValidating } = useCart();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [shippingLoading, setShippingLoading] = useState(false);
   const [shippingCost, setShippingCost] = useState(0);
-  const [provinces, setProvinces] = useState<any[]>([]);
-  const [cities, setCities] = useState<any[]>([]);
-  const [districts, setDistricts] = useState<any[]>([]);
+  const [provinces] = useState(STATIC_REGIONS);
+  const [cities, setCities] = useState<typeof STATIC_REGIONS[number]['cities']>([]);
+  const [districts, setDistricts] = useState<typeof STATIC_REGIONS[number]['cities'][number]['districts']>([]);
   const [selectedProv, setSelectedProv] = useState('');
   const [selectedCityId, setSelectedCityId] = useState('');
-  const [orderSuccess, setOrderSuccess] = useState(false);
   const [form, setForm] = useState({
      name: user?.name || '',
      phone: '',
@@ -39,36 +78,23 @@ export default function CheckoutPage() {
   }, [validateCart]);
 
   useEffect(() => {
-    fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')
-      .then(res => res.json())
-      .then(data => setProvinces(data))
-      .catch(e => console.error(e));
-  }, []);
-
-  useEffect(() => {
     if (selectedProv) {
       setForm(prev => ({ ...prev, city: '', district: '' }));
       setSelectedCityId('');
-      fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProv}.json`)
-        .then(res => res.json())
-        .then(data => setCities(data))
-        .catch(e => console.error(e));
+      setCities(provinces.find((province) => province.id === selectedProv)?.cities ?? []);
     } else {
       setCities([]);
     }
-  }, [selectedProv]);
+  }, [selectedProv, provinces]);
 
   useEffect(() => {
     if (selectedCityId) {
       setForm(prev => ({ ...prev, district: '' }));
-      fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${selectedCityId}.json`)
-        .then(res => res.json())
-        .then(data => setDistricts(data))
-        .catch(e => console.error(e));
+      setDistricts(cities.find((city) => city.id === selectedCityId)?.districts ?? []);
     } else {
       setDistricts([]);
     }
-  }, [selectedCityId]);
+  }, [selectedCityId, cities]);
   
   // Store city logic removed for static mode
 
@@ -89,7 +115,7 @@ export default function CheckoutPage() {
        const costs = res.ok ? await res.json() : [];
        const firstCost = costs?.[0]?.cost?.[0]?.value;
        setShippingCost(Number(firstCost) || 15000);
-     } catch (e) {
+     } catch {
        setShippingCost(15000);
      } finally {
        setShippingLoading(false);
@@ -136,15 +162,9 @@ export default function CheckoutPage() {
        const data = await response.json();
        if (!response.ok) throw new Error(data.error || 'Gagal membuat pesanan');
 
-       if (form.paymentMethod === 'cod' || data.token === 'STATIC_CHECKOUT') {
+       if (form.paymentMethod === 'cod' || form.paymentMethod === 'demo-digital' || data.token === 'STATIC_CHECKOUT') {
           clear();
           window.location.href = `/umkm/pesanan?id=${data.order_id}&status=success`;
-          return;
-       }
-       
-       if (form.paymentMethod === 'midtrans' && data.redirect_url) {
-          clear();
-          window.location.href = data.redirect_url;
           return;
        }
      } catch (e: any) {
@@ -268,11 +288,11 @@ export default function CheckoutPage() {
                    <div className="p-1.5 bg-green-50 text-green-700 border border-green-100"><CreditCard className="w-4 h-4" /></div> METODE PEMBAYARAN
                  </h2>
                  <div className="flex flex-col gap-3">
-                    <label className={`border p-4 flex items-center gap-3 cursor-pointer transition-colors ${form.paymentMethod === 'midtrans' ? 'border-primary-600 bg-primary-50' : 'border-gray-200'}`}>
-                       <input type="radio" name="payment" value="midtrans" checked={form.paymentMethod === 'midtrans'} onChange={() => setForm({...form, paymentMethod: 'midtrans'})} className="text-primary-600 focus:ring-primary-500 w-4 h-4" />
+                    <label className={`border p-4 flex items-center gap-3 cursor-pointer transition-colors ${form.paymentMethod === 'demo-digital' ? 'border-primary-600 bg-primary-50' : 'border-gray-200'}`}>
+                       <input type="radio" name="payment" value="demo-digital" checked={form.paymentMethod === 'demo-digital'} onChange={() => setForm({...form, paymentMethod: 'demo-digital'})} className="text-primary-600 focus:ring-primary-500 w-4 h-4" />
                        <div className="flex-1">
-                          <p className="text-sm font-bold text-gray-900">Digital Payment (Otomatis)</p>
-                          <p className="text-[10px] uppercase font-bold tracking-widest text-gray-500">QRIS, Bank Transfer, E-Wallet</p>
+                          <p className="text-sm font-bold text-gray-900">Digital Payment Demo</p>
+                          <p className="text-[10px] uppercase font-bold tracking-widest text-gray-500">Simulasi QRIS, transfer, dan e-wallet</p>
                        </div>
                     </label>
                     <label className={`border p-4 flex items-center gap-3 cursor-pointer transition-colors ${form.paymentMethod === 'cod' ? 'border-primary-600 bg-primary-50' : 'border-gray-200'}`}>
